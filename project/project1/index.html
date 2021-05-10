@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="author" content="Jasmine Chae" />
+    
+    <link rel="shortcut icon" type="image/x-icon" href="../../img/favicon.ico">
+    <title>Project 1: Exploratory Data Analysis</title>
+    <meta name="generator" content="Hugo 0.83.1" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="../../css/main.css" />
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:200,400,200bold,400old" />
+    
+    <!--[if lt IE 9]>
+			<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+			<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+		<![endif]-->
+
+    
+  </head>
+
+  <body>
+    <div id="wrap">
+      
+      <nav class="navbar navbar-default">
+  <div class="container">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="../../"><i class="fa fa-home"></i></a>
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <div class="navbar-collapse collapse" id="navbar">
+      <ul class="nav navbar-nav navbar-right">
+      
+        
+        <li><a href="../../post/">BLOG</a></li>
+        
+        <li><a href="../../projects/">PROJECTS</a></li>
+        
+        <li><a href="../../resume/">RESUME</a></li>
+        
+      
+      </ul>
+    </div>
+  </div>
+</nav>
+
+      <div class="container">
+        <div class="blog-post">
+          <h3>
+            <strong><a href="../../project/project1/">Project 1: Exploratory Data Analysis</a></strong>
+          </h3>
+        </div>
+ 
+<div class="blog-title">
+          <h4>
+         January 1, 0001 
+            &nbsp;&nbsp;
+            
+          </h4>
+        </div>
+
+        <div class="panel panel-default">
+          <div class="panel-body">
+            <div class="blogpost">
+              
+
+
+<div id="data-wrangling-and-data-exploration" class="section level2">
+<h2>Data Wrangling and Data Exploration</h2>
+</div>
+<div id="introduction" class="section level2">
+<h2>0. Introduction</h2>
+<p>For my project, I decided to combine a dataset of global alcohol consumption and a dataset of global life expectancy, both containing data from the year 2010. The global alcohol consumption dataset contains the variables country and total liters of pure alcohol served, for each country. The life expectancy dataset contains the variables country, developed or developing status, life expectancy in age, and BMI, for each country. I found these datasets on Kaggle and decided it would be interesting to see if there was any correlation between the amount of alcohol consumed and life expectancy by country. One possible association that I expect to see is that the higher a country’s alcohol consumption, the lower the life expectancy; this seems like a logical correlation, but this relationship could be affected by whether the country is developed or developing, which I have included as a categorical variable. Another possible association I expect to see is that the higher a country’s alcohol consumption, the higher its BMI. Again, this seems like a logical correlation because consuming alcohol regularly or in large quantities can lead to weight gain.</p>
+</div>
+<div id="tidying-rearranging-widelong" class="section level2">
+<h2>1. Tidying: Rearranging Wide/Long</h2>
+<p>Prior to tidying my data, I imported the tidyverse package, dplyr package, and my two datasets into R. Data should be tidied in order to have each variable form its own column and each observation form a row; this makes the data more organized and easier to work with. Because my data was already tidy, I transformed my data from long to wide by piping my drinks (global alcohol consumption) dataset into the pivot_wider function. Then, to switch it back to the original format, I piped my wide drinks dataset into the pivot_longer function.</p>
+<pre class="r"><code>library(tidyverse)
+library(dplyr)
+
+library(readxl)
+lifeex &lt;- read_excel(&quot;lifeex.xlsx&quot;)
+
+library(readxl)
+drinks &lt;- read_excel(&quot;drinks.xlsx&quot;)
+
+wide_drinks &lt;- drinks %&gt;% pivot_wider(names_from = &quot;country&quot;, 
+    values_from = &quot;total_litres_of_pure_alcohol&quot;)
+
+long_drinks &lt;- wide_drinks %&gt;% pivot_longer(cols = c(1:158), 
+    names_to = &quot;country&quot;, values_to = &quot;litres_of_pure_alcohol&quot;)
+
+head(wide_drinks)</code></pre>
+<pre><code>## # A tibble: 1 x 193
+##   Afghanistan Albania Algeria Andorra Angola `Antigua &amp; Barb… Argentina Armenia
+##         &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt;            &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;
+## 1           0     4.9     0.7    12.4    5.9              4.9       8.3     3.8
+## # … with 185 more variables: Australia &lt;dbl&gt;, Austria &lt;dbl&gt;, Azerbaijan &lt;dbl&gt;,
+## #   Bahamas &lt;dbl&gt;, Bahrain &lt;dbl&gt;, Bangladesh &lt;dbl&gt;, Barbados &lt;dbl&gt;,
+## #   Belarus &lt;dbl&gt;, Belgium &lt;dbl&gt;, Belize &lt;dbl&gt;, Benin &lt;dbl&gt;, Bhutan &lt;dbl&gt;,
+## #   Bolivia &lt;dbl&gt;, `Bosnia-Herzegovina` &lt;dbl&gt;, Botswana &lt;dbl&gt;, Brazil &lt;dbl&gt;,
+## #   Brunei &lt;dbl&gt;, Bulgaria &lt;dbl&gt;, `Burkina Faso` &lt;dbl&gt;, Burundi &lt;dbl&gt;, `Cote
+## #   d&#39;Ivoire` &lt;dbl&gt;, `Cabo Verde` &lt;dbl&gt;, Cambodia &lt;dbl&gt;, Cameroon &lt;dbl&gt;,
+## #   Canada &lt;dbl&gt;, `Central African Republic` &lt;dbl&gt;, Chad &lt;dbl&gt;, Chile &lt;dbl&gt;,
+## #   China &lt;dbl&gt;, Colombia &lt;dbl&gt;, Comoros &lt;dbl&gt;, Congo &lt;dbl&gt;, `Cook
+## #   Islands` &lt;dbl&gt;, `Costa Rica` &lt;dbl&gt;, Croatia &lt;dbl&gt;, Cuba &lt;dbl&gt;,
+## #   Cyprus &lt;dbl&gt;, `Czech Republic` &lt;dbl&gt;, `North Korea` &lt;dbl&gt;, `DR
+## #   Congo` &lt;dbl&gt;, Denmark &lt;dbl&gt;, Djibouti &lt;dbl&gt;, Dominica &lt;dbl&gt;, `Dominican
+## #   Republic` &lt;dbl&gt;, Ecuador &lt;dbl&gt;, Egypt &lt;dbl&gt;, `El Salvador` &lt;dbl&gt;,
+## #   `Equatorial Guinea` &lt;dbl&gt;, Eritrea &lt;dbl&gt;, Estonia &lt;dbl&gt;, Ethiopia &lt;dbl&gt;,
+## #   Fiji &lt;dbl&gt;, Finland &lt;dbl&gt;, France &lt;dbl&gt;, Gabon &lt;dbl&gt;, Gambia &lt;dbl&gt;,
+## #   Georgia &lt;dbl&gt;, Germany &lt;dbl&gt;, Ghana &lt;dbl&gt;, Greece &lt;dbl&gt;, Grenada &lt;dbl&gt;,
+## #   Guatemala &lt;dbl&gt;, Guinea &lt;dbl&gt;, `Guinea-Bissau` &lt;dbl&gt;, Guyana &lt;dbl&gt;,
+## #   Haiti &lt;dbl&gt;, Honduras &lt;dbl&gt;, Hungary &lt;dbl&gt;, Iceland &lt;dbl&gt;, India &lt;dbl&gt;,
+## #   Indonesia &lt;dbl&gt;, Iran &lt;dbl&gt;, Iraq &lt;dbl&gt;, Ireland &lt;dbl&gt;, Israel &lt;dbl&gt;,
+## #   Italy &lt;dbl&gt;, Jamaica &lt;dbl&gt;, Japan &lt;dbl&gt;, Jordan &lt;dbl&gt;, Kazakhstan &lt;dbl&gt;,
+## #   Kenya &lt;dbl&gt;, Kiribati &lt;dbl&gt;, Kuwait &lt;dbl&gt;, Kyrgyzstan &lt;dbl&gt;, Laos &lt;dbl&gt;,
+## #   Latvia &lt;dbl&gt;, Lebanon &lt;dbl&gt;, Lesotho &lt;dbl&gt;, Liberia &lt;dbl&gt;, Libya &lt;dbl&gt;,
+## #   Lithuania &lt;dbl&gt;, Luxembourg &lt;dbl&gt;, Madagascar &lt;dbl&gt;, Malawi &lt;dbl&gt;,
+## #   Malaysia &lt;dbl&gt;, Maldives &lt;dbl&gt;, Mali &lt;dbl&gt;, Malta &lt;dbl&gt;, `Marshall
+## #   Islands` &lt;dbl&gt;, Mauritania &lt;dbl&gt;, …</code></pre>
+<pre class="r"><code>head(long_drinks)</code></pre>
+<pre><code>## # A tibble: 6 x 37
+##   Somalia `South Africa` Spain `Sri Lanka` Sudan Suriname Swaziland Sweden
+##     &lt;dbl&gt;          &lt;dbl&gt; &lt;dbl&gt;       &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;  &lt;dbl&gt;
+## 1       0            8.2    10         2.2   1.7      5.6       4.7    7.2
+## 2       0            8.2    10         2.2   1.7      5.6       4.7    7.2
+## 3       0            8.2    10         2.2   1.7      5.6       4.7    7.2
+## 4       0            8.2    10         2.2   1.7      5.6       4.7    7.2
+## 5       0            8.2    10         2.2   1.7      5.6       4.7    7.2
+## 6       0            8.2    10         2.2   1.7      5.6       4.7    7.2
+## # … with 29 more variables: Switzerland &lt;dbl&gt;, Syria &lt;dbl&gt;, Tajikistan &lt;dbl&gt;,
+## #   Thailand &lt;dbl&gt;, Macedonia &lt;dbl&gt;, `Timor-Leste` &lt;dbl&gt;, Togo &lt;dbl&gt;,
+## #   Tonga &lt;dbl&gt;, `Trinidad &amp; Tobago` &lt;dbl&gt;, Tunisia &lt;dbl&gt;, Turkey &lt;dbl&gt;,
+## #   Turkmenistan &lt;dbl&gt;, Tuvalu &lt;dbl&gt;, Uganda &lt;dbl&gt;, Ukraine &lt;dbl&gt;, `United Arab
+## #   Emirates` &lt;dbl&gt;, `United Kingdom` &lt;dbl&gt;, Tanzania &lt;dbl&gt;, USA &lt;dbl&gt;,
+## #   Uruguay &lt;dbl&gt;, Uzbekistan &lt;dbl&gt;, Vanuatu &lt;dbl&gt;, Venezuela &lt;dbl&gt;,
+## #   Vietnam &lt;dbl&gt;, Yemen &lt;dbl&gt;, Zambia &lt;dbl&gt;, Zimbabwe &lt;dbl&gt;, country &lt;chr&gt;,
+## #   litres_of_pure_alcohol &lt;dbl&gt;</code></pre>
+</div>
+<div id="joiningmerging" class="section level2">
+<h2>2. Joining/Merging</h2>
+<p>I joined my two datasets into one by using the dplyr inner-join function so that I would only keep the observations/countries that were present in both datasets in order to have a more cohesive final dataset. The inner join function allowed me to drop any row/country in either of the datasets that didn’t have a match; therefore, I only kept the observations/rows that had a match on the ID variables, being country in this case. I used the inner-join function over the full-join function as to not have any NAs introduced into my dataset. I used the length setdiff function and length intersect function in order to determine how many cases were dropped and from which dataset. There are 35 countries that appear in the global alcohol consumption dataset but not in the global life expectancy dataset, while there are 25 countries that appear in the global life expectancy dataset but not in the global alcohol consumption dataset. There were a total of 60 observations dropped between the two datasets, leaving 158 common observations/countries.</p>
+<pre class="r"><code>global &lt;- inner_join(drinks, lifeex, by = c(country = &quot;Country&quot;))
+
+length(setdiff(drinks$country, lifeex$Country))</code></pre>
+<pre><code>## [1] 35</code></pre>
+<pre class="r"><code>length(setdiff(lifeex$Country, drinks$country))</code></pre>
+<pre><code>## [1] 25</code></pre>
+<pre class="r"><code>length(intersect(drinks$country, lifeex$Country))</code></pre>
+<pre><code>## [1] 158</code></pre>
+</div>
+<div id="wrangling" class="section level2">
+<h2>3. Wrangling</h2>
+<div id="mutate" class="section level3">
+<h3>Mutate</h3>
+<pre class="r"><code>global2 &lt;- (global %&gt;% mutate(total_ounces_of_pure_alcohol = total_litres_of_pure_alcohol * 
+    33.814))
+head(global2)</code></pre>
+<pre><code>## # A tibble: 6 x 6
+##   country  total_litres_of_pu… Status  `Life expectanc…   BMI total_ounces_of_p…
+##   &lt;chr&gt;                  &lt;dbl&gt; &lt;chr&gt;              &lt;dbl&gt; &lt;dbl&gt;              &lt;dbl&gt;
+## 1 Afghani…                 0   Develo…             58.8  16.7                0  
+## 2 Albania                  4.9 Develo…             76.2  54.3              166. 
+## 3 Algeria                  0.7 Develo…             74.7  53.9               23.7
+## 4 Angola                   5.9 Develo…             49.6   2.4              200. 
+## 5 Argenti…                 8.3 Develo…             75.5  59.8              281. 
+## 6 Armenia                  3.8 Develo…             73.5  51.2              128.</code></pre>
+</div>
+<div id="summarize-group_by-categorical-mean" class="section level3">
+<h3>Summarize Group_by Categorical, Mean</h3>
+<pre class="r"><code>global %&gt;% group_by(global$status) %&gt;% summarize(mean_alchohol = mean(total_litres_of_pure_alcohol, 
+    na.rm = T), mean_life = mean(`Life expectancy`, na.rm = T), 
+    mean_BMI = mean(BMI, na.rm = T))</code></pre>
+<pre><code>## # A tibble: 1 x 3
+##   mean_alchohol mean_life mean_BMI
+##           &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+## 1          4.68      69.9     38.4</code></pre>
+</div>
+</div>
+<div id="filter-select" class="section level2">
+<h2>Filter, Select</h2>
+<pre class="r"><code>lifeex_alcohol &lt;- global %&gt;% filter(total_litres_of_pure_alcohol &gt; 
+    mean(total_litres_of_pure_alcohol) | `Life expectancy` &gt; 
+    mean(`Life expectancy`))
+
+lifeex_alcohol %&gt;% select(country)</code></pre>
+<pre><code>## # A tibble: 111 x 1
+##    country   
+##    &lt;chr&gt;     
+##  1 Albania   
+##  2 Algeria   
+##  3 Angola    
+##  4 Argentina 
+##  5 Armenia   
+##  6 Australia 
+##  7 Austria   
+##  8 Azerbaijan
+##  9 Bahamas   
+## 10 Bahrain   
+## # … with 101 more rows</code></pre>
+</div>
+<div id="summarize-without-group_by-median-summarize-group_by-categorical-arrange" class="section level2">
+<h2>Summarize (without group_by), Median, Summarize Group_by Categorical, Arrange</h2>
+<pre class="r"><code>global %&gt;% summarize(median(total_litres_of_pure_alcohol))</code></pre>
+<pre><code>## # A tibble: 1 x 1
+##   `median(total_litres_of_pure_alcohol)`
+##                                    &lt;dbl&gt;
+## 1                                    4.2</code></pre>
+<pre class="r"><code>global %&gt;% group_by(Status) %&gt;% summarize(median.alcohol = median(total_litres_of_pure_alcohol)) %&gt;% 
+    arrange(desc(median.alcohol))</code></pre>
+<pre><code>## # A tibble: 2 x 2
+##   Status     median.alcohol
+##   &lt;chr&gt;               &lt;dbl&gt;
+## 1 Developed            10.3
+## 2 Developing            2.5</code></pre>
+</div>
+<div id="summarize-without-group_by-filter-max-min-select" class="section level2">
+<h2>Summarize (without group_by), Filter, Max, Min, Select</h2>
+<pre class="r"><code>global %&gt;% summarize(max_life = max(`Life expectancy`))</code></pre>
+<pre><code>## # A tibble: 1 x 1
+##   max_life
+##      &lt;dbl&gt;
+## 1       89</code></pre>
+<pre class="r"><code>global %&gt;% filter(`Life expectancy` == 89) %&gt;% select(total_litres_of_pure_alcohol)</code></pre>
+<pre><code>## # A tibble: 1 x 1
+##   total_litres_of_pure_alcohol
+##                          &lt;dbl&gt;
+## 1                          9.3</code></pre>
+<pre class="r"><code>global %&gt;% summarize(min_life = min(`Life expectancy`))</code></pre>
+<pre><code>## # A tibble: 1 x 1
+##   min_life
+##      &lt;dbl&gt;
+## 1     36.3</code></pre>
+<pre class="r"><code>global %&gt;% filter(`Life expectancy` == 36.3) %&gt;% select(total_litres_of_pure_alcohol)</code></pre>
+<pre><code>## # A tibble: 1 x 1
+##   total_litres_of_pure_alcohol
+##                          &lt;dbl&gt;
+## 1                          5.9</code></pre>
+</div>
+<div id="summarize-without-group_by-quantile" class="section level2">
+<h2>Summarize (without group_by), Quantile</h2>
+<pre class="r"><code>global %&gt;% summarize(quantile(total_litres_of_pure_alcohol))</code></pre>
+<pre><code>## # A tibble: 5 x 1
+##   `quantile(total_litres_of_pure_alcohol)`
+##                                      &lt;dbl&gt;
+## 1                                      0  
+## 2                                      1.3
+## 3                                      4.2
+## 4                                      7.2
+## 5                                     14.4</code></pre>
+<pre class="r"><code>global %&gt;% summarize(quantile(`Life expectancy`))</code></pre>
+<pre><code>## # A tibble: 5 x 1
+##   `quantile(\`Life expectancy\`)`
+##                             &lt;dbl&gt;
+## 1                            36.3
+## 2                            63  
+## 3                            72.8
+## 4                            75.9
+## 5                            89</code></pre>
+<pre class="r"><code>global %&gt;% summarize(quantile(BMI, na.rm = T))</code></pre>
+<pre><code>## # A tibble: 5 x 1
+##   `quantile(BMI, na.rm = T)`
+##                        &lt;dbl&gt;
+## 1                        2.2
+## 2                       19.8
+## 3                       44.2
+## 4                       57.6
+## 5                       75.2</code></pre>
+<p><em>In the wrangling portion of this project, I started by first mutating the variable total_litres_of_pure_alchohol in order to convert these values to total_ounces_of_pure_alcohol to understand this variable from a different perspective, measurement wise. I created a new and separate dataset, “global2”, with the mutated variable, using the conversion of one liter being equal to 33.814 ounces. Using the head function, I observed the first five observations to get an idea of the conversion of alcohol volume. Next, using the pipe function with my joined dataset (“global”), I grouped the data by status of the country (developed or developing), then piped that into the summarize function to calculate the mean alcohol consumption (in liters), mean life expectancy, and mean BMI. The mean of total liters of pure alcohol was relatively low, most likely due to there being several countries that do not drink alcohol at all. Next, I created a new dataset, “lifeex_alcohol”, then piped my global dataset into the filter function based on two criteria: whether the country had an alcohol consumption greater than the mean consumption or a life expectancy greater than the mean life expectancy. Afterwards, I piped the new dataset into the select function to pull these observations by name of country to see which observations fit this criteria; there were 111 countries that fit either of the criteria listed in the filter. </em></p>
+<p><em>I wanted to see how the mean alcohol consumption compared to the median alcohol consumption, so I piped my global dataset into a summarize function to find the median of that variable. The median was 4.2 liters, while the mean was 4.67 liters; these values are fairly close together, so my dataset has a somewhat symmetrical distribution, which I found interesting. Next, I piped my global dataset into a group_by function to group countries by status, then piped this into a summarize function to calculate the median alcohol consumption. Finally, I piped this into an arrange function to order the two groups by their median alcohol consumption in descending order. From this, I learned that developed countries have a higher median of alcohol consumption than developing countries, with 10.3 liters for the former and 2.5 liters for the latter. I then determined the max life expectancy from my dataset by piping the global dataset into a summarize function that calculates for max life expectancy; the max life expectancy out of my dataset is 89 years. Then, I piped my dataset into a function to filter only for the observation where life expectancy is 89; next, I piped this into a select function to show the column for total liters of pure alcohol. I did this to see if the country with greatest life expectancy had a lower or higher amount of alcohol consumption compared to the average; the value for this portion of code was 9.3 liters of pure alcohol, so the country with the highest life expectancy did drink more than the mean alcohol consumption. I followed this same process described for max life expectancy again, but instead, used min life expectancy this time. The country that had the lowest life expectancy in the dataset, 36.3 years, consumed 5.9 liters of pure alcohol; this was greater than the average alcohol consumption but lower than the amount consumed for country with max life expectancy. Finally, I used the summarize function three different times to calculate the quantile for total liters of pure alcohol, life expectancy, and BMI. Each time, I followed the same process by piping my global dataset into the summarize function, which would then calculate the quantile for my three different variables. For BMI, I had to include “na.rm=T” in my code because there was one NA in my observations.</em></p>
+</div>
+<div id="visualizing" class="section level2">
+<h2>4. Visualizing</h2>
+<div id="correlation-heatmap" class="section level3">
+<h3>Correlation Heatmap</h3>
+<pre class="r"><code>corMatrix &lt;- global %&gt;% select_if(is.numeric) %&gt;% cor(use = &quot;pair&quot;)
+tidycor &lt;- corMatrix %&gt;% as.data.frame %&gt;% rownames_to_column(&quot;var1&quot;) %&gt;% 
+    pivot_longer(-1, names_to = &quot;var2&quot;, values_to = &quot;correlation&quot;)
+tidycor %&gt;% ggplot(aes(var1, var2, fill = correlation)) + geom_tile() + 
+    geom_text(aes(label = round(correlation, 2)), color = &quot;pink&quot;, 
+        size = 3) + theme(axis.text.x = element_text(angle = 90, 
+    hjust = 1)) + scale_fill_gradient2(low = &quot;white&quot;, mid = &quot;yellow&quot;, 
+    high = &quot;blue&quot;) + ggtitle(&quot;Correlation Heatmap&quot;)</code></pre>
+<p><img src="../../project/project1_files/figure-html/unnamed-chunk-9-1.png" width="672" style="display: block; margin: auto;" />
+## Plots with ggplot</p>
+<pre class="r"><code>library(tidyverse)
+library(ggplot2)
+
+global %&gt;% ggplot(aes(total_litres_of_pure_alcohol, `Life expectancy`, 
+    color = Status)) + geom_point() + theme_dark() + ggtitle(&quot;Life Expectancy vs Global Alcohol Consumption&quot;) + 
+    xlab(&quot;Alcohol Consumed (liters)&quot;) + ylab(&quot;Life Expectancy (years)&quot;) + 
+    scale_x_continuous(breaks = round(seq(0, 15, 1))) + geom_point(size = 0.5, 
+    alpha = 0.5)</code></pre>
+<p><img src="../../project/project1_files/figure-html/unnamed-chunk-10-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>ggplot(global, aes(x = BMI, y = total_litres_of_pure_alcohol, 
+    color = BMI)) + geom_bar(stat = &quot;summary&quot;, fun = mean, width = 1.5) + 
+    facet_wrap(~Status) + ggtitle(&quot;Alcohol Consumption vs BMI (Faceted by Country Status)&quot;) + 
+    xlab(&quot;BMI&quot;) + ylab(&quot;Alcohol Consumption (liters)&quot;)</code></pre>
+<p><img src="../../project/project1_files/figure-html/unnamed-chunk-10-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p><em>From looking at my correlation heatmap, there does not seem to be any two sets of variables in my dataset that have a particularly strong correlation. The variables with the highest correlation, 0.53, were life expectancy and BMI. It makes sense that these two variables have the highest correlation out of any combination of two variables in the dataset because BMI can be indicative of healthfulness. However, in reality, healthfulness is supported by many other variables, and BMI cannot stand alone, so it makes sense why the correlation between life expectancy and BMI can be described as moderate. The correlation between total liters of pure alcohol and BMI was the lowest, at 0.31. This value seems logical because alcohol consumption alone does not play a strong role in predicting BMI but can still have somewhat of an effect. The correlation between total liters of pure alcohol and life expectancy was similar in value to the previous correlation mentioned but a bit stronger, at 0.39. This value seems as logical as the correlation between total liters of pure alcohol and BMI; while alcohol consumption can impact life expectancy, it is not a variable that can stand alone. These correlation values on the heatmap all seem reasonable because while alcohol consumption and BMI and life expectancy all meet at some kind of intersection, there are endless variables as to what could affect BMI or life expectancy. Therefore, it makes sense that these correlation values were low to moderate.</em></p>
+<p><em>I made a scatterplot portraying the relationship between life expectancy, in years, and pure alcohol consumed, in liters. Additionally, each observation’s country status, developed or developing, is portrayed by two different colors; the red points represent the developed countries, while the developing countries are represented by the blue points, as the legend on the side of the plot indicates. It seems that there is a somewhat positive correlation between life expectancy and alcohol consumed, meaning that the greater the amount of alcohol consumed in a country, the higher that country’s life expectancy. However, there are certain things to notice before coming to this conclusion prematurely. First of all, there are several outliers that stray from the seemingly positive relationship between the two variables. Additionally, there is a distinct separation between developing and developed countries; with the exception of a few outliers, the countries with longer life expectancies do tend to be developed nations. So, the trends depicted on this scatterplot may come as a surprise, but when taking the status of the country into consideration, it seems logical that the developed countries have both a greater life expectancy and higher amount of alcohol consumption. This could be due to the fact that developed countries have better living conditions compared to developing countries, thus explaining the greater life expectancy; also, perhaps developed countries have both more time and money to spend on alcohol consumption.</em></p>
+<p><em>For my next plot, I decided to make a barplot comparing alcohol consumption, in liters, and BMI, faceted by country status. I was interested in seeing the breakdown between developed and developing countries and if there was any apparent relationship between BMI and alcohol consumption. I expected to see a pattern of lower BMIs in countries that consumed less alcohol or in developing countries in general. This trend does somewhat exist on the plot, with the exception of a few notable outliers. There are developed countries that have some of the highest alcohol consumption, but surprisingly, have significantly below average BMIs. This was surprising to me because while both living in a developed country and consuming large amounts of alcohol, I would expect to see BMIs greater than the average, but this is not the case. There was also the opposite case present in this plot: there were a few developing countries that did not consume much alcohol but had an above average BMI. Of course there are a plethora of factors that could affect a country’s BMI, but it was interesting to see the relationship between it and alcohol consumption, faceted by a country’s status.</em></p>
+</div>
+</div>
+<div id="dimensionality-reduction" class="section level2">
+<h2>5. Dimensionality Reduction</h2>
+<pre class="r"><code>library(cluster)
+pam_dat &lt;- global %&gt;% select(total_litres_of_pure_alcohol, `Life expectancy`)
+sil_width &lt;- vector()
+for (i in 2:10) {
+    pam_fit &lt;- pam(pam_dat, k = i)
+    sil_width[i] &lt;- pam_fit$silinfo$avg.width
+}
+ggplot() + geom_line(aes(x = 1:10, y = sil_width)) + scale_x_continuous(name = &quot;k&quot;, 
+    breaks = 1:10)</code></pre>
+<p><img src="../../project/project1_files/figure-html/unnamed-chunk-11-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>library(cluster)
+pam1 &lt;- global %&gt;% select(total_litres_of_pure_alcohol, `Life expectancy`) %&gt;% 
+    pam(k = 2)
+pamclust = global %&gt;% mutate(cluster = as.factor(pam1$clustering))
+pamclust %&gt;% ggplot(aes(total_litres_of_pure_alcohol, `Life expectancy`, 
+    color = cluster)) + geom_point()</code></pre>
+<p><img src="../../project/project1_files/figure-html/unnamed-chunk-11-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>pamclust %&gt;% group_by(cluster) %&gt;% select(cluster, total_litres_of_pure_alcohol, 
+    `Life expectancy`) %&gt;% summarize_if(is.numeric, mean, na.rm = T)</code></pre>
+<pre><code>## # A tibble: 2 x 3
+##   cluster total_litres_of_pure_alcohol `Life expectancy`
+##   &lt;fct&gt;                          &lt;dbl&gt;             &lt;dbl&gt;
+## 1 1                               2.88              59.0
+## 2 2                               5.61              75.6</code></pre>
+<pre class="r"><code>pam1$silinfo$avg.width</code></pre>
+<pre><code>## [1] 0.529551</code></pre>
+<pre class="r"><code>library(cluster)
+pam_dat &lt;- global %&gt;% select(total_litres_of_pure_alcohol, BMI)
+sil_width &lt;- vector()
+for (i in 2:10) {
+    pam_fit &lt;- pam(pam_dat, k = i)
+    sil_width[i] &lt;- pam_fit$silinfo$avg.width
+}
+ggplot() + geom_line(aes(x = 1:10, y = sil_width)) + scale_x_continuous(name = &quot;k&quot;, 
+    breaks = 1:10)</code></pre>
+<p><img src="../../project/project1_files/figure-html/unnamed-chunk-12-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>library(cluster)
+pam1 &lt;- global %&gt;% select(total_litres_of_pure_alcohol, BMI) %&gt;% 
+    pam(k = 2)
+pamclust = global %&gt;% mutate(cluster = as.factor(pam1$clustering))
+pamclust %&gt;% ggplot(aes(total_litres_of_pure_alcohol, BMI, color = cluster)) + 
+    geom_point()</code></pre>
+<p><img src="../../project/project1_files/figure-html/unnamed-chunk-12-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>pamclust %&gt;% group_by(cluster) %&gt;% select(cluster, total_litres_of_pure_alcohol, 
+    BMI) %&gt;% summarize_if(is.numeric, mean, na.rm = T)</code></pre>
+<pre><code>## # A tibble: 2 x 3
+##   cluster total_litres_of_pure_alcohol   BMI
+##   &lt;fct&gt;                          &lt;dbl&gt; &lt;dbl&gt;
+## 1 1                               3.24  32.0
+## 2 2                               9.36  59.1</code></pre>
+<pre class="r"><code>pam1$silinfo$avg.width</code></pre>
+<pre><code>## [1] 0.2654315</code></pre>
+<p><em>For the dimensionality reduction portion of the project, I decided to perform a k-means/PAM clustering on the relationship between the variables total liters of pure alcohol and life expectancy, as well as total liters of pure alcohol and BMI. For my first cluster plot, I examined the clusters in total liters of pure alcohol vs life expectancy. From looking at the goodness-of-fit line, the greatest silhouette width is at k=2, so there are two clusters in my dataset. Looking at the two clusters in the relationship between total liters of pure alcohol and life expectancy, it is evident that cluster 2 has more occurrences of greater alcohol consumption, while also having better life expectancy than cluster 1. In cluster 1, the mean for total liters of pure alcohol is 2.88 liters, while the mean life expectancy is 59.00 years. In cluster 2, the mean for total liters of pure alcohol is 5.60 liters, while the mean life expectancy is 75.57 years. The average silhouette width is 0.53, which means that a reasonable structure has been found.</em></p>
+<p><em>Next, I examined the clusters in total liters of pure alcohol vs BMI. From looking at my goodness-of-fit line, the greatest silhouette width is at k=2, so there are two clusters in my dataset. Looking at the two clusters in the relationship with these two variables, it appears that cluster 2 is a bit worse off, on average, than cluster 1. Cluster 2 has a more condensed spread and consumes an average to above average amount of alcohol, while having BMIs well above average. However, cluster 1 has a much more varied spread and is plotted all across the graph. In cluster 1, the mean for total liters of pure alcohol is 3.24 liters, while the mean BMI is 31.98. In cluster 2, the mean for total liters of pure alcohol is 9.36 liters, while the mean BMI is 59.12. The average silhouette width is 0.26, which means the structure is weak and could be artificial.</em></p>
+<div id="instructions" class="section level3">
+<h3>Instructions</h3>
+<p>A knitted R Markdown document (ideally HTML) and the raw R Markdown file (as .Rmd) should both be submitted to Canvas by 11:59pm on the due date. These two documents will be graded jointly, so they must be consistent (i.e., don’t change the R Markdown file without also updating the knitted document).</p>
+<p>The text of the document should provide a narrative structure around your code/output. All results presented must have corresponding code. Any answers/results/plots etc. given without the corresponding R code that generated the result will not be considered. Furthermore, all code contained in your final project document must work correctly (knit early, knit often)! Please do not include any extraneous code or code which produces error messages. (Code that produces warnings is acceptable, as long as you understand what the warnings mean!)</p>
+</div>
+<div id="find-data" class="section level3">
+<h3>Find data:</h3>
+<p>Find two (!) datasets with one variable in common (e.g., dates, times, states, counties, countries, sports players), both with at least 50 observations (i.e., rows) in each. Please think very carefully about whether it makes sense to combine your datasets! If you find one dataset with 50 patients and it has their age, and you find another dataset with 50 <em>different</em> patients that has their ages, it makes no sense to join them based on age (you would just be pairing up random people of the same age).</p>
+<p>When combined, the resulting/final dataset must have <strong>at least 4 different variables (at least 3 numeric) in addition to the common variable</strong> (i.e., five variables total).</p>
+<p>You can have as many variables as you would like! If you found two datasets that you like but they don’t have enough variables, find a third dataset with the same common variable and join all three.</p>
+</div>
+<div id="guidelines" class="section level3">
+<h3>Guidelines</h3>
+<ol style="list-style-type: decimal">
+<li><p>If the datasets are not tidy, you will need to reshape them so that every observation has its own row and every variable its own column. If the datasets are both already tidy, you will make them untidy with <code>pivot_wider()/spread()</code> and then tidy them again with <code>pivot_longer/gather()</code> to demonstrate your use of the functions. It’s fine to wait until you have your descriptives to use these functions (e.g., you might want to pivot_wider() to rearrange the data to make your descriptive statistics easier to look at); it’s fine long as you use them at least once!</p>
+<ul>
+<li><p>Depending on your datasets, it might be a good idea to do this before joining. For example, if you have a dataset you like with multiple measurements per year, but you want to join by year, you could average over your numeric variables to get means/year, do counts for your categoricals to get a counts/year, etc.</p></li>
+<li><p>If your data sets are already tidy, demonstrate the use of <code>pivot_longer()/gather()</code> and <code>pivot_wider()/spread()</code> on all or part of your data at some point in this document (e.g., after you have generated summary statistics in part 3, make a table of them wide instead of long).</p></li>
+</ul></li>
+<li><p>Join your 2+ separate data sources into a single dataset based on a common ID variable! If you can’t find a good pair datasets to join, you may split one main dataset into two different datasets with a common ID variable in each, and then join them back together based on that common ID, but this is obviously less than ideal.</p>
+<ul>
+<li>You will document the type of join that you do (left/right/inner/full), including a discussion of how many observations were in each dataset, which observations in each dataset were dropped (if any) and why you chose this particular join.</li>
+</ul></li>
+<li><p>Create summary statistics</p>
+<ul>
+<li><p>Use <em>all six</em> core <code>dplyr</code> functions (<code>filter, select, arrange, group_by, mutate, summarize</code>) to manipulate and explore your dataset. For mutate, create a new variable that is a function of at least one other variable, preferably using a dplyr vector function (see dplyr cheatsheet). It’s totally fine to use the <code>_if</code>, <code>_at</code>, <code>_all</code> versions of mutate/summarize instead (indeed, it is encouraged if you have lots of variables)</p></li>
+<li><p>Create summary statistics (<code>mean, sd, var, n, quantile, min, max, n_distinct, cor</code>, etc) for each of your numeric variables both overall and after grouping by one of your categorical variables (either together or one-at-a-time; if you have two categorical variables, try to include at least one statistic based on a grouping of two categorical variables simultaneously). If you do not have any categorical variables, create one using mutate (e.g., with <code>case_when</code> or <code>ifelse</code>) to satisfy the <code>group_by</code> requirements above. Ideally, you will find a way to show these summary statistics in an easy-to-read table (e.g., by reshaping). (You might explore the kable package for making pretty tables!) If you have lots of numeric variables (e.g., 10+), or your categorical variables have too many categories, just pick a few (either numeric variables or categories of a categorical variable) and summarize based on those. It would be a good idea to show a correlation matrix for your numeric variables (you will need it to make one of your plots).</p></li>
+</ul></li>
+<li><p>Make visualizations (three plots)</p>
+<ul>
+<li>Make a correlation heatmap of your numeric variables</li>
+<li>Create at least two additional plots of your choice with ggplot that highlight some of the more interesting features of your data.</li>
+<li>Each plot (besides the heatmap) should have at least three variables mapped to separate aesthetics</li>
+<li>Each should use different geoms (e.g., don’t do two geom_bars)</li>
+<li>At least one plot should include <code>stat="summary"</code></li>
+<li>Each plot should include a supporting paragraph describing the relationships that are being visualized and any trends that are apparent
+<ul>
+<li>It is fine to include more, but limit yourself to 4. Plots should avoid being redundant! Four bad plots will get a lower grade than two good plots, all else being equal.</li>
+</ul></li>
+<li>Make them pretty! Use correct labels, etc.</li>
+</ul></li>
+<li><p>Perform k-means/PAM clustering or PCA on (at least) your numeric variables.</p>
+<ul>
+<li><p>Include all steps as we discuss in class, including a visualization.</p></li>
+<li><p>If you don’t have at least 3 numeric variables, or you want to cluster based on categorical variables too, convert them to factors in R, generate Gower’s dissimilarity matrix on the data, and do PAM clustering on the dissimilarities.</p></li>
+<li><p>Show how you chose the final number of clusters/principal components</p></li>
+<li><p>Interpret the final clusters/principal components</p></li>
+<li><p>For every step, document what your code does (in words) and what you see in the data!</p></li>
+</ul></li>
+</ol>
+<P style="page-break-before: always">
+<div style="page-break-after: always;"></div>
+</div>
+<div id="rubric" class="section level3">
+<h3>Rubric</h3>
+<p>Prerequisite: Finding appropriate data from at least two sources per the instructions above: Failure to do this will result in a 0! You will submit a .Rmd file and a knitted document (html/pdf).</p>
+<div id="introduction-5-pts" class="section level4">
+<h4>0. Introduction (5 pts)</h4>
+<ul>
+<li>Write a narrative introductory paragraph or two describing the datasets you have chosen, the variables they contain, how they were acquired, and why they are interesting to you. Expand on potential associations you may expect, if any.</li>
+</ul>
+</div>
+<div id="tidying-rearranging-widelong-10-pts" class="section level4">
+<h4>1. Tidying: Rearranging Wide/Long (10 pts)</h4>
+<ul>
+<li>Tidy the datasets (using the <code>tidyr</code> functions <code>pivot_longer</code>/<code>gather</code> and/or <code>pivot_wider</code>/<code>spread</code>)</li>
+<li>If you data sets are already tidy, be sure to use those functions somewhere else in your project (e.g., for rearranging summary statistics)</li>
+<li>Document the process (describe in words what was done)</li>
+</ul>
+</div>
+<div id="joiningmerging-10-pts" class="section level4">
+<h4>2. Joining/Merging (10 pts)</h4>
+<ul>
+<li>Join your datasets into one using a <code>dplyr</code> join function</li>
+<li>If you have multiple observations on the joining variable in either dataset, fix this by collapsing via summarize</li>
+<li>Discuss the process in words, including why you chose the join you did</li>
+<li>Discuss which cases were dropped, if any, and potential problems with this</li>
+</ul>
+</div>
+<div id="wrangling-40-pts" class="section level4">
+<h4>3. Wrangling (40 pts)</h4>
+<ul>
+<li>Use all six core <code>dplyr</code> functions in the service of generating summary tables/statistics (12 pts)
+<ul>
+<li>Use mutate at least once to generate a variable that is a function of at least one other variable</li>
+</ul></li>
+<li>Compute summary statistics for each of your variables using <code>summarize</code> alone and with <code>group_by</code> (if you have more than 10 variables, fine to just focus on 10) (20 pts)
+<ul>
+<li>Use at least 5 unique functions inside of summarize (e.g., mean, sd)</li>
+<li>For at least 2, use summarize after grouping by a categorical variable. Create one by dichotomizing a numeric if necessary</li>
+<li>If applicable, at least 1 of these should group by two categorical variables</li>
+</ul></li>
+<li>Summarize the procedure and discuss all (or the most interesting) results in no more than two paragraphs (8 pts)</li>
+</ul>
+</div>
+<div id="visualizing-30-pts" class="section level4">
+<h4>4. Visualizing (30 pts)</h4>
+<ul>
+<li><p>Create a correlation heatmap of your numeric variables the way we did in class</p></li>
+<li><p>Create two more effective, polished plots with ggplot</p>
+<ul>
+<li>Each plot should map 3+ variables to aesthetics</li>
+<li>Each plot should have a title and clean labeling for all mappings</li>
+<li>Change at least one default theme element and color for at least one mapping per plot</li>
+<li>For at least one plot, add more tick marks (x, y, or both) than are given by default</li>
+<li>For at least one plot, use the stat=“summary” function</li>
+<li>Supporting paragraph or two (for each plot) describing the relationships/trends that are apparent</li>
+</ul></li>
+</ul>
+</div>
+<div id="dimensionality-reduction-30-pts" class="section level4">
+<h4>5. Dimensionality Reduction (30 pts)</h4>
+<ul>
+<li><p>Either k-means/PAM clustering or PCA (inclusive “or”) should be performed on at least three of your variables (3 is just the minimum: using more/all of them will make this much more interesting!)</p>
+<ul>
+<li>All relevant steps discussed in class (e.g., picking number of PCs/clusters)</li>
+<li>A visualization of the clusters or the first few principal components (using ggplot2)</li>
+<li>Supporting paragraph or two describing results found, interpreting the clusters/PCs in terms of the original variables and observations, discussing goodness of fit or variance explained, etc.</li>
+</ul></li>
+</ul>
+</div>
+<div id="neatness-holisticdiscretionary-points-5-pts" class="section level4">
+<h4>6. Neatness, Holistic/Discretionary Points (5 pts)</h4>
+<ul>
+<li>Keep things looking nice! Your project should not knit to more than 30 or so pages (probably closer to 10-20)! You will lose points if you print out your entire dataset(s), have terrible formatting, etc. If you start your project in a fresh .Rmd file, you are advised to copy set-up code below and include it: this will do things like automatically truncate if you accidentally print out a huge dataset, etc. Imagine this is a polished report you are giving to your PI or boss to summarize your work researching a topic.</li>
+</ul>
+<pre class="r"><code>## paste this chunk into the ```{r setup} chunk at the top of
+## your project 1 .Rmd file
+
+knitr::opts_chunk$set(echo = TRUE, eval = TRUE, fig.align = &quot;center&quot;, 
+    warning = F, message = F, tidy = TRUE, tidy.opts = list(width.cutoff = 60), 
+    R.options = list(max.print = 100))</code></pre>
+</div>
+</div>
+<div id="where-do-i-find-data" class="section level3">
+<h3>Where do I find data?</h3>
+<p>OK, brace yourself!</p>
+<p>You can choose ANY datasets you want that meet the above criteria for variables and observations. I’m just sitting here but off the top of my head, if you are into amusement parks, you could look at amusement-park variables, including ticket sales per day etc.; then you could join this by date in weather data. If you are interested in Game of Thrones, you could look at how the frequency of mentions of character names (plus other character variables) and the frequency of baby names in the USA…You could even take your old Biostats data and merge in new data (e.g., based on a Google forms timestamp).</p>
+<p>You could engage in some “me-search”: You can <a href="https://support.spotify.com/ca-en/article/data-rights-and-privacy-settings/">request your Spotify data</a> or <a href="https://help.netflix.com/en/node/101917">download Netflix viewing activity</a>, Amazon purchase history, etc. You can use your Google Fit/Fitbit/Apple watch data, etc. These can be combined (e.g., with each other, with other data sources).</p>
+<p>You can make it as serious as you want, or not, but keep in mind that you will be incorporating this project into a portfolio webpage for your final in this course, so choose something that really reflects who you are, or something that you feel will advance you in the direction you hope to move career-wise, or something that you think is really neat. On the flip side, regardless of what you pick, you will be performing all the same tasks, so it doesn’t end up being that big of a deal.</p>
+<p>If you are totally clueless and have no direction at all, log into the server and type</p>
+<pre class="r"><code>data(package = .packages(all.available = TRUE))</code></pre>
+<p>This will print out a list of <strong>ALL datasets in ALL packages</strong> installed on the server (a ton)! Scroll until your eyes bleed! Actually, do not scroll that much… To start with something more manageable, just run the command on your own computer, or just run <code>data()</code> to bring up the datasets in your current environment. To read more about a dataset, do <code>?packagename::datasetname</code>.</p>
+<p>If it is easier for you, and in case you don’t have many packages installed, a list of R datasets from a few common packages (also downloadable in CSV format) is given at the following website: <a href="https://vincentarelbundock.github.io/Rdatasets/datasets.html" class="uri">https://vincentarelbundock.github.io/Rdatasets/datasets.html</a> (including types/numbers of variables in each)</p>
+<ul>
+<li><p>A good package to download for fun/relevant data is <code>fivethiryeight</code>. Just run <code>install.packages("fivethirtyeight"), load the packages with</code>library(fivethirtyeight)<code>, run</code>data()`, and then scroll down to view the datasets. Here is an online list of all 127 datasets (with links to the 538 articles). Lots of sports, politics, current events, etc: <a href="https://cran.r-project.org/web/packages/fivethirtyeight/vignettes/fivethirtyeight.html" class="uri">https://cran.r-project.org/web/packages/fivethirtyeight/vignettes/fivethirtyeight.html</a></p></li>
+<li><p>If you have already started to specialize (e.g., ecology, epidemiology) you might look at discipline-specific R packages (vegan, epi, respectively). We will be using some tools from these packages later in the course, but they come with lots of data too, which you can explore according to the directions above</p></li>
+<li><p>However, you <em>emphatically DO NOT</em> have to use datasets available via R packages! In fact, I would much prefer it if you found the data from completely separate sources and brought them together (a much more realistic experience in the real world)! You can even reuse data from your SDS328M project, provided it shares a variable in common with other data which allows you to merge the two together (e.g., if you still had the timestamp, you could look up the weather that day: <a href="https://www.wunderground.com/history/" class="uri">https://www.wunderground.com/history/</a>). If you work in a research lab or have access to old data, you could potentially merge it with new data from your lab!</p></li>
+<li><p>Here is a curated list of interesting datasets (read-only spreadsheet format): <a href="https://docs.google.com/spreadsheets/d/1wZhPLMCHKJvwOkP4juclhjFgqIY8fQFMemwKL2c64vk/edit" class="uri">https://docs.google.com/spreadsheets/d/1wZhPLMCHKJvwOkP4juclhjFgqIY8fQFMemwKL2c64vk/edit</a></p></li>
+<li><p>Here is another great compilation of datasets: <a href="https://github.com/rfordatascience/tidytuesday" class="uri">https://github.com/rfordatascience/tidytuesday</a></p></li>
+<li><p>Here is the UCI Machine Learning Repository: <a href="https://archive.ics.uci.edu/ml/index.php" class="uri">https://archive.ics.uci.edu/ml/index.php</a></p>
+<ul>
+<li>See also <a href="https://en.wikipedia.org/wiki/List_of_datasets_for_machine-learning_research#Biological_data" class="uri">https://en.wikipedia.org/wiki/List_of_datasets_for_machine-learning_research#Biological_data</a></li>
+</ul></li>
+<li><p>Here is another good general place to look: <a href="https://www.kaggle.com/datasets" class="uri">https://www.kaggle.com/datasets</a></p></li>
+<li><p>To help narrow your search down or to see interesting variable ideas, check out <a href="https://www.tylervigen.com/spurious-correlations" class="uri">https://www.tylervigen.com/spurious-correlations</a>. This is the spurious correlations website, and it is fun, but if you look at the bottom of each plot you will see sources for the data. This is a good place to find very general data (or at least get a sense of where you can scrape data together from)!</p></li>
+<li><p>If you are interested in medical data, check out www.countyhealthrankings.org</p></li>
+<li><p>If you are interested in scraping UT data, the university makes <em>loads</em> of data public (e.g., beyond just professor CVs and syllabi). Check out all the data that is available in the statistical handbooks: <a href="https://reports.utexas.edu/statistical-handbook" class="uri">https://reports.utexas.edu/statistical-handbook</a></p></li>
+</ul>
+<div id="broader-data-sources" class="section level5">
+<h5>Broader data sources:</h5>
+<p><a href="www.data.gov">Data.gov</a> 186,000+ datasets!</p>
+<p><a href="Social%20Explorer">Social Explorer</a> is a nice interface to Census and American Community Survey data (more user-friendly than the government sites). May need to sign up for a free trial.</p>
+<p><a href="www.bls.gov">U.S. Bureau of Labor Statistics</a></p>
+<p><a href="www.census.gov">U.S. Census Bureau</a></p>
+<p><a href="www.gapminder.org/data">Gapminder</a>, data about the world.</p>
+<p>…</p>
+</div>
+</div>
+</div>
+
+            
+        <hr>         <div class="related-posts">
+                <h5>Related Posts</h5>
+                
+              </div> 
+            </div>
+          </div>
+
+   <hr>  <div class="disqus">
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+
+    (function() {
+      
+      
+      if (window.location.hostname == "localhost")
+        return;
+
+      var disqus_shortname = '';
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  <a href="http://disqus.com/" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div> 
+        </div>
+      </div>
+    </div>
+
+    
+    <footer>
+  <div id="footer">
+    <div class="container">
+      <p class="text-muted">&copy; All rights reserved. Powered by <a href="https://gohugo.io/">Hugo</a> and
+      <a href="http://www.github.com/nurlansu/hugo-sustain/">sustain</a> with ♥</p>
+    </div>
+  </div>
+</footer>
+<div class="footer"></div>
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+<script src="../../js/docs.min.js"></script>
+<script src="../../js/main.js"></script>
+
+<script src="../../js/ie10-viewport-bug-workaround.js"></script>
+
+
+    
+  </body>
+</html>

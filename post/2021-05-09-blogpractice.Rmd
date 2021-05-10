@@ -1,0 +1,13 @@
+---
+title: blogpractice
+author: ''
+date: '2021-05-09'
+slug: blogpractice
+categories: []
+tags: []
+description: ''
+---
+i am jasmine
+[Link to project 1](/project/project1/)
+
+[Link to google](https://www.google.com)
