@@ -1,0 +1,27 @@
+---
+title: Blog
+author: 'Jasmine Chae'
+date: '2021-05-09'
+slug: blog
+categories: []
+tags: []
+description: ''
+---
+##What is Python?
+Python is an interactive and object-oriented, general-purpose coding language which allows programers to have more utility with this particular software than simply data analysis or web development. Due to its clear syntax, Python is great for beginners!
+
+```{r}
+library(reticulate)
+hi<-"Hello"
+```
+
+```{python}
+hi="world"
+print(r.hi,hi)
+```
+
+```{r}
+cat(c(hi,py$hi))
+```
+
+![](https://www.hakaimagazine.com/wp-content/uploads/header-sea-otter-reintroduction-1.jpg)

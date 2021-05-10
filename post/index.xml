@@ -8,13 +8,13 @@
     <language>en-US</language>
     <lastBuildDate>Sun, 09 May 2021 00:00:00 +0000</lastBuildDate><atom:link href="/post/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>blogpractice</title>
-      <link>/post/2021/05/09/blogpractice/</link>
+      <title>Blog</title>
+      <link>/post/2021/05/09/blog/</link>
       <pubDate>Sun, 09 May 2021 00:00:00 +0000</pubDate>
       
-      <guid>/post/2021/05/09/blogpractice/</guid>
-      <description>i am jasmine Link to project 1
-Link to google</description>
+      <guid>/post/2021/05/09/blog/</guid>
+      <description> ##What is Python? Python is an interactive and object-oriented, general-purpose coding language which allows programers to have more utility with this particular software than simply data analysis or web development. Due to its clear syntax, Python is great for beginners!
+library(reticulate) hi&amp;lt;-&amp;quot;Hello&amp;quot; hi=&amp;quot;world&amp;quot; print(r.hi,hi) ## Hello world cat(c(hi,py$hi)) ## Hello world </description>
     </item>
     
   </channel>
